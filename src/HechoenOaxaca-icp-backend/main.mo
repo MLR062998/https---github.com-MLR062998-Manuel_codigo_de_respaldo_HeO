@@ -1,3 +1,4 @@
+// Importaciones necesarias
 import Principal "mo:base/Principal";
 import Blob "mo:base/Blob";
 import Result "mo:base/Result";
@@ -22,20 +23,21 @@ type AplicationError = {
     #ProductoNoExiste: Text;
 };
 
-// Actor principal
+// Actor principal para gestionar productos
 actor {
-    // Definir el tipo del HashMap explícitamente
+    // Tabla de productos usando HashMap
     var productos_table: HashMap.HashMap<Principal, Producto> = 
         HashMap.HashMap<Principal, Producto>(10, Principal.equal, Principal.hash);
 
-    // Función para generar un ID aleatorio
-    public func generateId(): async Principal {
+    // Función para generar un ID aleatorio (async)
+    private func generateId(): async Principal {
+        // Usamos `await` solo dentro de una función async
         let randomBlob = await Random.blob();
         let randomBytes = Array.subArray(Blob.toArray(randomBlob), 0, 29);
         return Principal.fromBlob(Blob.fromArray(randomBytes));
     };
 
-    // Función pública para crear un producto
+    // Crear un producto (shared async)
     public shared({caller}) func createProducto(
         nombre: Text,
         precio: Float,
@@ -43,8 +45,8 @@ actor {
         artesano: Text,
         tipo: Text
     ): async Producto {
+        // Correcto: usamos `await` para esperar el ID generado
         let id = await generateId();
-
         let producto: Producto = {
             id = id;
             nombre = nombre;
@@ -54,23 +56,21 @@ actor {
             tipo = tipo;
             imagen = null;
         };
-
-        productos_table.put(id, producto);
-        return producto;
+        productos_table.put(id, producto);  // Guardamos en el HashMap
+        return producto;  // Devolvemos el producto creado
     };
 
-    // Función pública para leer todos los productos
+    // Leer todos los productos (consulta query)
     public query func readProductos(): async [Producto] {
-        let productosIter = productos_table.vals();
-        return Iter.toArray(productosIter);
+        return Iter.toArray(productos_table.vals());  // Convertimos a array
     };
 
-    // Función pública para leer un producto por ID
+    // Leer un producto por ID (consulta query)
     public query func readProductoById(id: Principal): async ?Producto {
-        return productos_table.get(id);
+        return productos_table.get(id);  // Devolvemos el producto si existe
     };
 
-    // Función pública para eliminar un producto por ID
+    // Eliminar un producto por ID
     public shared({caller}) func deleteProducto(
         id: Principal
     ): async Result.Result<Producto, AplicationError> {
@@ -80,7 +80,7 @@ actor {
         }
     };
 
-    // Función pública para actualizar un producto
+    // Actualizar un producto existente
     public shared({caller}) func updateProducto(
         id: Principal,
         nombre: Text,
@@ -107,7 +107,7 @@ actor {
         }
     };
 
-    // Función pública para subir una imagen a un producto
+    // Subir una imagen a un producto
     public shared({caller}) func uploadImagen(
         id: Principal,
         imagen: Blob
