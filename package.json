@@ -14,5 +14,9 @@
   "type": "module",
   "workspaces": [
     "src/HechoenOaxaca-icp-frontend"
-  ]
+  ],
+  "dependencies": {
+    "@connect2ic/react": "^0.2.0-beta.24",
+    "react-bootstrap": "^2.10.5"
+  }
 }
