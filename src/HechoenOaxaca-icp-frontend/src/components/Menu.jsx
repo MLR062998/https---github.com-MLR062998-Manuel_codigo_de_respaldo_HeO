@@ -7,8 +7,7 @@ import Users from "./Product";
 import UserCreate from "./UserProduct";
 import WalletComponent from "./WalletComponent"; // Importa el WalletComponent
 import * as usuarios_backend from "declarations/HechoenOaxaca-icp-backend";
-import { connect } from '@connect2ic/core';
-import { createClient } from "@connect2ic/core";
+import { connect, createClient } from "@connect2ic/core";
 import { InternetIdentity } from "@connect2ic/core/providers/internet-identity";
 
 // Función para detectar cuando un elemento está disponible en el DOM
