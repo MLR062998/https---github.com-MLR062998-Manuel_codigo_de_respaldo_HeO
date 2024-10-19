@@ -2,27 +2,18 @@
 import React from 'react';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import Menu from './components/Menu';
-import WalletComponent from './components/WalletComponent'; // Importa tu componente de la wallet
-import './index.scss';
-//import 'bootstrap/dist/css/bootstrap.min.css';//home/manuellr/HechoenOaxaca-icp/src/HechoenOaxaca-icp-frontend/dist/assets/index-2a8a0c6e.css
+import WalletComponent from './components/WalletComponent'; 
 import Home from './components/Home';
+import './index.scss';
 
 function App() {
   return (
     <div className='container'>
       <Router>
-        {/* El componente Menu ahora manejará la navegación */}
-        <Menu />
-        
-        {/* Rutas para la navegación */}
+        <Menu />  {/* No mover este Router al interior de Menu.jsx */}
         <Routes>
-          {/* Ruta principal o cualquier otra que tengas */}
           <Route path="/" element={<Home />} />
-          
-          {/* Ruta para la Wallet */}
           <Route path="/wallet" element={<WalletComponent />} />
-          
-          {/* Otras rutas que puedas tener */}
         </Routes>
       </Router>
     </div>
