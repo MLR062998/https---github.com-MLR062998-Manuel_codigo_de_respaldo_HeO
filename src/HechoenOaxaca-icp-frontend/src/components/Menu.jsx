@@ -3,10 +3,11 @@ import React, { useEffect } from 'react';
 import { Link, BrowserRouter, Route, Routes } from 'react-router-dom';
 import { ConnectButton, ConnectDialog, useConnect } from "@connect2ic/react";
 import Home from "./Home";
-import Users from "./Users";
-import UserCreate from "./UserCreate";
+import Users from "./Product";
+import UserCreate from "./UserProduct";
 import WalletComponent from "./WalletComponent"; // Importa el WalletComponent
-import * as usuarios_backend from "declarations/usuarios_backend";
+import * as usuarios_backend from "declarations/HechoenOaxaca-icp-backend";
+import { connect } from '@connect2ic/core';
 import { createClient } from "@connect2ic/core";
 import { InternetIdentity } from "@connect2ic/core/providers/internet-identity";
 

@@ -1,30 +1,31 @@
-import { useState } from 'react';
-import { HechoenOaxaca_icp_backend } from 'declarations/HechoenOaxaca-icp-backend';
+// App.jsx
+import React from 'react';
+import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
+import Menu from './components/Menu';
+import WalletComponent from './components/WalletComponent'; // Importa tu componente de la wallet
+import './index.scss';
+//import 'bootstrap/dist/css/bootstrap.min.css';//home/manuellr/HechoenOaxaca-icp/src/HechoenOaxaca-icp-frontend/dist/assets/index-2a8a0c6e.css
+import Home from './components/Home';
 
 function App() {
-  const [greeting, setGreeting] = useState('');
-
-  function handleSubmit(event) {
-    event.preventDefault();
-    const name = event.target.elements.name.value;
-    HechoenOaxaca_icp_backend.greet(name).then((greeting) => {
-      setGreeting(greeting);
-    });
-    return false;
-  }
-
   return (
-    <main>
-      <img src="/logo2.svg" alt="DFINITY logo" />
-      <br />
-      <br />
-      <form action="#" onSubmit={handleSubmit}>
-        <label htmlFor="name">Enter your name: &nbsp;</label>
-        <input id="name" alt="Name" type="text" />
-        <button type="submit">Click Me!</button>
-      </form>
-      <section id="greeting">{greeting}</section>
-    </main>
+    <div className='container'>
+      <Router>
+        {/* El componente Menu ahora manejará la navegación */}
+        <Menu />
+        
+        {/* Rutas para la navegación */}
+        <Routes>
+          {/* Ruta principal o cualquier otra que tengas */}
+          <Route path="/" element={<Home />} />
+          
+          {/* Ruta para la Wallet */}
+          <Route path="/wallet" element={<WalletComponent />} />
+          
+          {/* Otras rutas que puedas tener */}
+        </Routes>
+      </Router>
+    </div>
   );
 }
 
