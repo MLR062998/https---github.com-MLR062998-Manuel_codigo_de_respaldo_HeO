@@ -51,7 +51,7 @@ const Menu = () => {
         <div className="container-fluid">
           <Link to='/' className="navbar-brand">Mercado</Link>
           <Link to='/nuevo-producto' className="navbar-brand">Nuevo</Link>
-          <Link to='/usuarios' className="navbar-brand" id="btnUserList">Usuarios</Link>
+          <Link to='/usuarios' className="navbar-brand" id="btnUserList">Productos</Link>
           <div className="d-flex ms-auto">
             <Link to='/wallet' className="btn btn-secondary me-2" id="btnWallet">Wallet</Link>
             <ConnectButton />

@@ -1,105 +1,130 @@
-// src/Menu.jsx
-import React, { useEffect } from 'react';
-import { Link, Route, Routes } from 'react-router-dom'; // No importes `BrowserRouter` aquí.
-import { ConnectButton, ConnectDialog, useConnect, Connect2ICProvider } from "@connect2ic/react";
-import Home from "./Home";
-import Product from "./Product";
-import UserProduct from "./UserProduct";
-import WalletComponent from "./WalletComponent";
-import * as usuarios_backend from "declarations/HechoenOaxaca-icp-backend";
-import { createClient } from "@connect2ic/core";
-import { InternetIdentity } from "@connect2ic/core/providers/internet-identity";
+import Principal "mo:base/Principal";
+import Blob "mo:base/Blob";
+import Result "mo:base/Result";
+import HashMap "mo:base/HashMap";
+import Array "mo:base/Array";
+import Iter "mo:base/Iter";
+import Random "mo:base/Random";
 
-// Configuración del cliente de conexión
-const client = createClient({
-  canisters: {
-    "HechoenOaxaca-icp-backend": usuarios_backend,
-  },
-  providers: [
-    new InternetIdentity({ providerUrl: "http://bkyz2-fmaaa-aaaaa-qaaaq-cai.localhost:4943/" }),
-  ],
-  globalProviderConfig: {
-    dev: true,
-  },
-});
+// Actor principal para gestionar productos
+actor HechoenOaxacaBackend {
 
-const Menu = () => {
-  const { principal, isConnected } = useConnect();
-
-  useEffect(() => {
-    const applyCustomStyles = (selector, styles) => {
-      const element = document.querySelector(selector);
-      if (element) Object.assign(element.style, styles);
+    // Definición del tipo Producto
+    type Producto = {
+        id: Principal;
+        nombre: Text;
+        precio: Float;
+        descripcion: Text;
+        artesano: Text;
+        tipo: Text;
+        imagen: ?Blob;
     };
 
-    applyCustomStyles('.connect-button', {
-      backgroundColor: 'blue',
-      fontSize: '17px',
-    });
+    // Definición del tipo AplicationError
+    type AplicationError = {
+        #ProductoNoExiste: Text;
+    };
 
-    applyCustomStyles('.ii-styles', {
-      color: 'red',
-      backgroundColor: 'blue',
-      padding: '3px',
-      marginLeft: '4px',
-    });
-  }, [isConnected]);
+    // Tabla de productos usando HashMap
+    var productos_table: HashMap.HashMap<Principal, Producto> = 
+        HashMap.HashMap<Principal, Producto>(10, Principal.equal, Principal.hash);
 
-  return (
-    <nav className="navbar navbar-expand-lg bg-primary" data-bs-theme="dark">
-      {isConnected && principal ? (
-        <div className="container-fluid">
-          <Link to='/' className="navbar-brand">Mercado</Link>
-          <Link to='/nuevo-producto' className="navbar-brand">Nuevo</Link>
-          <Link to='/usuarios' className="navbar-brand" id="btnUserList">Usuarios</Link>
-          <button className="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-            <span className="navbar-toggler-icon"></span>
-          </button>
-          <div className="collapse navbar-collapse" id="navbarSupportedContent">
-            <ul className="navbar-nav me-auto mb-2 mb-lg-0">
-              <li className="nav-item">
-                <a className="nav-link active" aria-current="page" href="#"></a>
-              </li>
-            </ul>
-            <div className="d-flex ms-auto">
-              <Link to='/wallet' className="btn btn-secondary me-2" id="btnWallet">Wallet</Link>
-              <ConnectButton />
-            </div>
-            <ConnectDialog />
-          </div>
-        </div>
-      ) : (
-        <div className="container-fluid">
-          <a className="navbar-brand" href="#">Mercado</a>
-          <button className="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-            <span className="navbar-toggler-icon"></span>
-          </button>
-          <div className="collapse navbar-collapse" id="navbarSupportedContent">
-            <ul className="navbar-nav me-auto mb-2 mb-lg-0">
-              <li className="nav-item">
-                <a className="nav-link active" aria-current="page" href="#"></a>
-              </li>
-            </ul>
-            <ConnectButton />
-            <ConnectDialog />
-          </div>
-        </div>
-      )}
-    </nav>
-  );
-};
+    // Función para generar un ID aleatorio
+    private func generateId(): async Principal {
+        let randomBlob = await Random.blob();
+        let randomBytes = Array.subArray(Blob.toArray(randomBlob), 0, 29);
+        return Principal.fromBlob(Blob.fromArray(randomBytes));
+    };
 
-// Exportación del componente App con Connect2ICProvider
-const App = () => (
-  <Connect2ICProvider client={client}>
-    <Menu />
-    <Routes>
-      <Route path="/" element={<Home />} />
-      <Route path="/Producto" element={<Product />} />
-      <Route path="/nuevo-producto" element={<UserProduct />} />
-      <Route path="/wallet" element={<WalletComponent />} />
-    </Routes>
-  </Connect2ICProvider>
-);
+    // Crear un producto
+    public shared({caller}) func createProducto(
+        nombre: Text,
+        precio: Float,
+        descripcion: Text,
+        artesano: Text,
+        tipo: Text
+    ): async Producto {
+        let id = await generateId();
+        let producto: Producto = {
+            id = id;
+            nombre = nombre;
+            precio = precio;
+            descripcion = descripcion;
+            artesano = artesano;
+            tipo = tipo;
+            imagen = null;
+        };
+        productos_table.put(id, producto);
+        return producto;
+    };
 
-export default App;
+    // Leer todos los productos
+    public query func readProductos(): async [Producto] {
+        return Iter.toArray(productos_table.vals());
+    };
+
+    // Leer un producto por ID
+    public query func readProductoById(id: Principal): async ?Producto {
+        return productos_table.get(id);
+    };
+
+    // Eliminar un producto por ID
+    public shared({caller}) func deleteProducto(
+        id: Principal
+    ): async Result.Result<Producto, AplicationError> {
+        switch (productos_table.remove(id)) {
+            case (?producto) { return #ok(producto); };
+            case null { return #err(#ProductoNoExiste(Principal.toText(id))); };
+        }
+    };
+
+    // Actualizar un producto existente
+    public shared({caller}) func updateProducto(
+        id: Principal,
+        nombre: Text,
+        precio: Float,
+        descripcion: Text,
+        artesano: Text,
+        tipo: Text
+    ): async Result.Result<Producto, AplicationError> {
+        switch (productos_table.get(id)) {
+            case (?productoExistente) {
+                let updatedProducto: Producto = {
+                    id = id;
+                    nombre = nombre;
+                    precio = precio;
+                    descripcion = descripcion;
+                    artesano = artesano;
+                    tipo = tipo;
+                    imagen = productoExistente.imagen;
+                };
+                productos_table.put(id, updatedProducto);
+                return #ok(updatedProducto);
+            };
+            case null { return #err(#ProductoNoExiste(Principal.toText(id))); };
+        }
+    };
+
+    // Subir una imagen a un producto
+    public shared({caller}) func uploadImagen(
+        id: Principal,
+        imagen: Blob
+    ): async Result.Result<Producto, AplicationError> {
+        switch (productos_table.get(id)) {
+            case (?productoExistente) {
+                let updatedProducto: Producto = {
+                    id = id;
+                    nombre = productoExistente.nombre;
+                    precio = productoExistente.precio;
+                    descripcion = productoExistente.descripcion;
+                    artesano = productoExistente.artesano;
+                    tipo = productoExistente.tipo;
+                    imagen = ?imagen;
+                };
+                productos_table.put(id, updatedProducto);
+                return #ok(updatedProducto);
+            };
+            case null { return #err(#ProductoNoExiste(Principal.toText(id))); };
+        }
+    };
+}
