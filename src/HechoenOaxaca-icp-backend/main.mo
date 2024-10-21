@@ -37,7 +37,7 @@ actor HechoenOaxacaBackend {
     };
 
     // Crear un producto
-    public shared({caller}) func createProducto(
+    public shared({caller = _ }) func createProducto(
         nombre: Text,
         precio: Float,
         descripcion: Text,
@@ -69,7 +69,7 @@ actor HechoenOaxacaBackend {
     };
 
     // Eliminar un producto por ID
-    public shared({caller}) func deleteProducto(
+    public shared({caller = _ }) func deleteProducto(
         id: Principal
     ): async Result.Result<Producto, AplicationError> {
         switch (productos_table.remove(id)) {
@@ -79,7 +79,7 @@ actor HechoenOaxacaBackend {
     };
 
     // Actualizar un producto existente
-    public shared({caller}) func updateProducto(
+    public shared({caller = _ }) func updateProducto(
         id: Principal,
         nombre: Text,
         precio: Float,
@@ -106,7 +106,7 @@ actor HechoenOaxacaBackend {
     };
 
     // Subir una imagen a un producto
-    public shared({caller}) func uploadImagen(
+    public shared({caller = _}) func uploadImagen(
         id: Principal,
         imagen: Blob
     ): async Result.Result<Producto, AplicationError> {

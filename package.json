@@ -9,7 +9,8 @@
     "prebuild": "npm run prebuild --workspaces --if-present",
     "pretest": "npm run prebuild --workspaces --if-present",
     "start": "npm start --workspaces --if-present",
-    "test": "npm test --workspaces --if-present"
+    "test": "npm test --workspaces --if-present",
+    "dev": "vite"
   },
   "type": "module",
   "workspaces": [
@@ -22,6 +23,7 @@
     "react-bootstrap": "^2.10.5"
   },
   "devDependencies": {
-    "@types/node": "^22.7.7"
+    "@types/node": "^22.7.7",
+    "vite": "^5.4.9"
   }
 }
