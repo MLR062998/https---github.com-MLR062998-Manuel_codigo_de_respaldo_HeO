@@ -1,6 +1,5 @@
 import { useCanister } from "@connect2ic/react";
 import React, { useState } from "react";
-import "./ProductCreate.css"; // Importar el archivo CSS
 
 const ProductCreate = () => {
   const [marketplaceBackend] = useCanister("HechoenOaxaca-icp-backend"); // Referencia correcta al backend

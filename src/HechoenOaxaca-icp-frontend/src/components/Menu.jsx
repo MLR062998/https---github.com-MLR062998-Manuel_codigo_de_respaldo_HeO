@@ -82,7 +82,7 @@ const Menu = () => {
               <Link to="/nuevo-producto" className="navbar-brand">
                 Nuevo Producto
               </Link>
-              <Link to="/lista Productos" className="navbar-brand" id="btnUserList">
+              <Link to="/Productos" className="navbar-brand" id="btnProductList">
                 Productos 
               </Link>
             </>
