@@ -5,59 +5,24 @@ import Button from 'react-bootstrap/Button';
 import Modal from 'react-bootstrap/Modal';
 
 const Products = () => {
-
-  const [marketplaceBackend] = useCanister("marketplace_backend");
+  const [marketplaceBackend] = useCanister("HechoenOaxaca-icp-backend"); // Cambiado el nombre del canister
   const { principal } = useConnect();
 
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState("");
   const [idProduct, setIdProduct] = useState("");
-  const [productName, setProductName] = useState("");
-
   const [showModalEditar, setShowModalEditar] = useState(false);
   const [showModalEliminar, setShowModalEliminar] = useState(false);
 
-  const updateProduct = async () => {
-    const form = document.getElementById("formEditar");
-    const nombre = form.nombre.value;
-    const precio = parseFloat(form.precio.value);
-    const descripcion = form.descripcion.value;
-    const artesano = form.artesano.value;
-    const tipo = form.tipo.value; // Captura el nuevo campo tipo
-
-    setLoading("Loading...");
-
-    await marketplaceBackend.updateProducto(idProduct, nombre, precio, descripcion, artesano, tipo);
-    setLoading("");
-    setIdProduct("");
-
-    setShowModalEditar(false);
-    fetchProducts();
-  };
-
-  const handleShowModalEditar = async (idProducto) => {
-    setShowModalEditar(true);
-    setIdProduct(idProducto);
-
-    const producto = await marketplaceBackend.readProductoById(idProducto);
-
-    const form = document.getElementById("formEditar");
-    form.nombre.value = producto[0].nombre;
-    form.precio.value = producto[0].precio;
-    form.descripcion.value = producto[0].descripcion;
-    form.artesano.value = producto[0].artesano;
-    form.tipo.value = producto[0].tipo; // Rellena el campo tipo
-  };
-
   const fetchProducts = async () => {
-    setLoading("Loading...");
+    setLoading("Cargando...");
     try {
       const productsRes = await marketplaceBackend.readProductos();
       setProducts(productsRes);
       setLoading("");
     } catch (e) {
       console.log(e);
-      setLoading("Error happened fetching products list");
+      setLoading("Error al cargar los productos.");
     }
   };
 
@@ -65,12 +30,46 @@ const Products = () => {
     fetchProducts();
   }, []);
 
+  const updateProduct = async () => {
+    const form = document.getElementById("formEditar");
+    const nombre = form.nombre.value;
+    const precio = parseFloat(form.precio.value);
+    const descripcion = form.descripcion.value;
+    const artesano = form.artesano.value;
+    const tipo = form.tipo.value;
+
+    setLoading("Actualizando producto...");
+
+    await marketplaceBackend.updateProducto(idProduct, nombre, precio, descripcion, artesano, tipo);
+    setLoading("");
+    setShowModalEditar(false);
+    fetchProducts();
+  };
+
+  const handleShowModalEditar = async (idProducto) => {
+    setShowModalEditar(true);
+    setIdProduct(idProducto);
+    const producto = await marketplaceBackend.readProductoById(idProducto);
+    
+    if (producto) {
+      const form = document.getElementById("formEditar");
+      form.nombre.value = producto.nombre;
+      form.precio.value = producto.precio;
+      form.descripcion.value = producto.descripcion;
+      form.artesano.value = producto.artesano;
+      form.tipo.value = producto.tipo;
+    }
+  };
+
+  const handleShowModalEliminar = (idProducto, productName) => {
+    setIdProduct(idProducto);
+    setShowModalEliminar(true);
+  };
+
   const deleteProduct = async () => {
-    setLoading("Loading...");
+    setLoading("Eliminando producto...");
     await marketplaceBackend.deleteProducto(idProduct);
     setLoading("");
-    setIdProduct("");
-    setProductName("");
     setShowModalEliminar(false);
     fetchProducts();
   };
@@ -80,11 +79,7 @@ const Products = () => {
       {principal ? (
         <div className="row mt-5">
           <div className="col">
-            {loading !== "" ? (
-              <div className="alert alert-primary">{loading}</div>
-            ) : (
-              <div></div>
-            )}
+            {loading && <div className="alert alert-primary">{loading}</div>}
             <div className="card">
               <div className="card-header">Lista de productos</div>
               <div className="card-body">
@@ -99,7 +94,7 @@ const Products = () => {
                       <th colSpan="2">Opciones</th>
                     </tr>
                   </thead>
-                  <tbody id="tbody">
+                  <tbody>
                     {products.map((product) => (
                       <tr key={product.id}>
                         <td>{product.nombre}</td>
@@ -111,7 +106,7 @@ const Products = () => {
                           <button
                             type="button"
                             className="btn btn-primary"
-                            onClick={() => handleShowModalEditar(`${product.id}`)}
+                            onClick={() => handleShowModalEditar(product.id)}
                           >
                             Editar
                           </button>
@@ -120,7 +115,7 @@ const Products = () => {
                           <button
                             type="button"
                             className="btn btn-danger"
-                            onClick={() => handleShowModalEliminar(`${product.id}`, product.nombre)}
+                            onClick={() => handleShowModalEliminar(product.id, product.nombre)}
                           >
                             Eliminar
                           </button>
@@ -133,6 +128,7 @@ const Products = () => {
             </div>
           </div>
 
+          {/* Modal para editar producto */}
           <Modal show={showModalEditar} onHide={() => setShowModalEditar(false)}>
             <Modal.Header closeButton>
               <Modal.Title>Actualizar producto</Modal.Title>
@@ -171,6 +167,24 @@ const Products = () => {
               </Button>
               <Button variant="primary" onClick={updateProduct}>
                 Guardar
+              </Button>
+            </Modal.Footer>
+          </Modal>
+
+          {/* Modal para eliminar producto */}
+          <Modal show={showModalEliminar} onHide={() => setShowModalEliminar(false)}>
+            <Modal.Header closeButton>
+              <Modal.Title>Eliminar producto</Modal.Title>
+            </Modal.Header>
+            <Modal.Body>
+              ¿Estás seguro que deseas eliminar este producto?
+            </Modal.Body>
+            <Modal.Footer>
+              <Button variant="secondary" onClick={() => setShowModalEliminar(false)}>
+                Cancelar
+              </Button>
+              <Button variant="danger" onClick={deleteProduct}>
+                Eliminar
               </Button>
             </Modal.Footer>
           </Modal>

@@ -8,7 +8,8 @@ import Home from './Home';
 import * as Productos_backend from 'declarations/HechoenOaxaca-icp-backend';
 import { createClient } from '@connect2ic/core';
 import { InternetIdentity } from '@connect2ic/core/providers/internet-identity';
-
+//// Actor principal para gestionar productos
+//actor HechoenOaxacaBackend 
 // Configuración del cliente
 const client = createClient({
   canisters: {

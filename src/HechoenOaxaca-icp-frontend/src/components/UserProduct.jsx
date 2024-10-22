@@ -2,7 +2,7 @@ import { useCanister } from "@connect2ic/react";
 import React, { useState } from "react";
 
 const ProductCreate = () => {
-  const [marketplace_backend] = useCanister("marketplace_backend");
+  const [marketplaceBackend] = useCanister("HechoenOaxaca-icp-backend"); // Referencia correcta al backend
   const [loading, setLoading] = useState("");
 
   const saveProduct = async (e) => {
@@ -14,10 +14,11 @@ const ProductCreate = () => {
     const artesano = form.artesano.value;
     const tipo = form.tipo.value;
 
-    setLoading("Loading...");
+    setLoading("Cargando...");
 
-    await marketplace_backend.createProducto(nombre, precio, descripcion, artesano, tipo);
+    await marketplaceBackend.createProducto(nombre, precio, descripcion, artesano, tipo);
     setLoading("");
+    form.reset(); // Limpiar el formulario después de guardar
   };
 
   return (
