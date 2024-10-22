@@ -10,7 +10,7 @@ export default defineConfig({
   build: {
     emptyOutDir: true,
     rollupOptions: {
-      // Añadimos @connect2ic/core como dependencia externa
+      // Añadir @connect2ic/core como dependencia externa si sigue dando problemas
       external: ['@connect2ic/core'],
     },
   },
@@ -38,9 +38,7 @@ export default defineConfig({
     alias: [
       {
         find: 'declarations',
-        replacement: fileURLToPath(
-          new URL('../declarations', import.meta.url)
-        ),
+        replacement: fileURLToPath(new URL('../declarations', import.meta.url)),
       },
     ],
   },
