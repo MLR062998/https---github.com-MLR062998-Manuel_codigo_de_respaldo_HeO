@@ -1,0 +1,17 @@
+.modal-content-custom {
+    padding: 20px;
+    background-color: #f7f7f7;
+    border-radius: 10px;
+  }
+  
+  .input-custom {
+    margin-bottom: 10px;
+    border-color: #007bff;
+  }
+  
+  .button-custom {
+    background-color: #28a745;
+    color: white;
+    border-radius: 5px;
+  }
+  

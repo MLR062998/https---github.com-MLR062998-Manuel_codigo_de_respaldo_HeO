@@ -83,7 +83,7 @@ const Menu = () => {
                 Nuevo Producto
               </Link>
               <Link to="/lista Productos" className="navbar-brand" id="btnUserList">
-                Usuarios
+                Productos 
               </Link>
             </>
           )}
