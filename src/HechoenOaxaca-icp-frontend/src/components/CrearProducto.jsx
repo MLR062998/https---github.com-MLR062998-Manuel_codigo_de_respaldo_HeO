@@ -1,9 +1,20 @@
 import { useCanister } from "@connect2ic/react";
 import React, { useState } from "react";
 
-const ProductCreate = () => {
-  const [marketplaceBackend] = useCanister("HechoenOaxaca-icp-backend"); // Referencia correcta al backend
+const CrearProducto = () => {
+  //const [HechoenOaxaca-icp-backend] = useCanister("HechoenOaxaca-icp-backend");
+  const [marketplaceBackend] = useCanister("HechoenOaxaca-icp-backend");
   const [loading, setLoading] = useState("");
+  const [images, setImages] = useState([]);
+
+  const handleImageChange = (e) => {
+    const selectedImages = Array.from(e.target.files);
+    if (selectedImages.length > 3) {
+      alert("Puedes subir un máximo de 3 imágenes.");
+      return;
+    }
+    setImages(selectedImages);
+  };
 
   const saveProduct = async (e) => {
     e.preventDefault();
@@ -16,9 +27,16 @@ const ProductCreate = () => {
 
     setLoading("Cargando...");
 
-    await marketplaceBackend.createProducto(nombre, precio, descripcion, artesano, tipo);
+    const imageBlobs = await Promise.all(
+      images.map((image) =>
+        image.arrayBuffer().then((buffer) => new Blob([buffer], { type: image.type }))
+      )
+    );
+
+    await marketplaceBackend.createProducto(nombre, precio, descripcion, artesano, tipo, imageBlobs);
     setLoading("");
-    form.reset(); // Limpiar el formulario después de guardar
+    setImages([]);
+    form.reset();
   };
 
   return (
@@ -54,9 +72,11 @@ const ProductCreate = () => {
                   <option value="dulces">Dulces tradicionales</option>
                 </select>
               </div>
-              <button type="submit" className="btn btn-success mt-3">
-                Agregar Producto
-              </button>
+              <div className="form-group">
+                <label htmlFor="imagenes">Subir Imágenes (Máximo 3)</label>
+                <input type="file" className="form-control" id="imagenes" accept="image/*" multiple onChange={handleImageChange} />
+              </div>
+              <button type="submit" className="btn btn-success mt-3">Agregar Producto</button>
             </form>
           </div>
         </div>
@@ -66,4 +86,5 @@ const ProductCreate = () => {
   );
 };
 
-export default ProductCreate;
+// Asegúrate de que el nombre coincida con el del componente
+export default CrearProducto;

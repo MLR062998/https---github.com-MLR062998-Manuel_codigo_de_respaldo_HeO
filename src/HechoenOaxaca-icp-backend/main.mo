@@ -17,12 +17,13 @@ actor HechoenOaxacaBackend {
         descripcion: Text;
         artesano: Text;
         tipo: Text;
-        imagen: ?Blob;
+        imagenes: [Blob];  // Ahora es un array de imágenes (máximo 3)
     };
 
     // Definición del tipo AplicationError
     type AplicationError = {
         #ProductoNoExiste: Text;
+        #ImagenLimiteExcedido: Text;
     };
 
     // Tabla de productos usando HashMap
@@ -36,13 +37,14 @@ actor HechoenOaxacaBackend {
         return Principal.fromBlob(Blob.fromArray(randomBytes));
     };
 
-    // Crear un producto
+    // Crear un producto con o sin imágenes
     public shared({caller = _ }) func createProducto(
         nombre: Text,
         precio: Float,
         descripcion: Text,
         artesano: Text,
-        tipo: Text
+        tipo: Text,
+        imagenes: [Blob]  // Se permite crear un producto con imágenes
     ): async Producto {
         let id = await generateId();
         let producto: Producto = {
@@ -52,7 +54,7 @@ actor HechoenOaxacaBackend {
             descripcion = descripcion;
             artesano = artesano;
             tipo = tipo;
-            imagen = null;
+            imagenes = imagenes;  // Guardar las imágenes
         };
         productos_table.put(id, producto);
         return producto;
@@ -96,7 +98,7 @@ actor HechoenOaxacaBackend {
                     descripcion = descripcion;
                     artesano = artesano;
                     tipo = tipo;
-                    imagen = productoExistente.imagen;
+                    imagenes = productoExistente.imagenes;  // Mantener las imágenes actuales
                 };
                 productos_table.put(id, updatedProducto);
                 return #ok(updatedProducto);
@@ -105,13 +107,20 @@ actor HechoenOaxacaBackend {
         }
     };
 
-    // Subir una imagen a un producto
+    // Subir imágenes a un producto
     public shared({caller = _}) func uploadImagen(
         id: Principal,
-        imagen: Blob
+        nuevasImagenes: [Blob]  // Se permite subir múltiples imágenes
     ): async Result.Result<Producto, AplicationError> {
         switch (productos_table.get(id)) {
             case (?productoExistente) {
+                let imagenesActuales = productoExistente.imagenes;
+                let totalImagenes = Array.append<Blob>(imagenesActuales, nuevasImagenes);
+
+                if (totalImagenes.size() > 3) {
+                    return #err(#ImagenLimiteExcedido("No se pueden agregar más de 3 imágenes."));
+                };
+
                 let updatedProducto: Producto = {
                     id = id;
                     nombre = productoExistente.nombre;
@@ -119,7 +128,7 @@ actor HechoenOaxacaBackend {
                     descripcion = productoExistente.descripcion;
                     artesano = productoExistente.artesano;
                     tipo = productoExistente.tipo;
-                    imagen = ?imagen;
+                    imagenes = totalImagenes;  // Actualizar con las nuevas imágenes
                 };
                 productos_table.put(id, updatedProducto);
                 return #ok(updatedProducto);
