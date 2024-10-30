@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link, Route, Routes } from 'react-router-dom';
 import { ConnectButton, ConnectDialog, useConnect, Connect2ICProvider } from '@connect2ic/react';
-import Product from './Product';
+import Productos from './productos';
 import WalletComponent from './WalletComponent';
 import Home from './Home';
 import * as Productos_backend from 'declarations/HechoenOaxaca-icp-backend';
@@ -61,7 +61,7 @@ const Menu = () => {
         {isConnected && principal && (
           <>
             <Route path="/nuevo-producto" element={<CrearProducto />} />  {/* Ajustado a UserProduct */}
-            <Route path="/productos" element={<Product />} />
+            <Route path="/productos" element={<Productos />} />
             <Route path="/wallet" element={<WalletComponent />} />
           </>
         )}

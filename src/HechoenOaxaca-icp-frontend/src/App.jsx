@@ -2,7 +2,7 @@ import React from 'react';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import Menu from './components/Menu';
 import CrearProducto from './components/CrearProducto';
-import Products from './components/Product';
+import Products from './components/productos';
 import Home from './components/Home';
 import { Connect2ICProvider } from '@connect2ic/react';
 import * as Productos_backend from 'declarations/HechoenOaxaca-icp-backend';
