@@ -5,7 +5,7 @@ import Button from 'react-bootstrap/Button';
 import Modal from 'react-bootstrap/Modal';
 
 const Products = () => {
-  const [marketplaceBackend] = useCanister("HechoenOaxaca-icp-backend"); // Cambiado el nombre del canister
+  const [marketplaceBackend] = useCanister("HechoenOaxaca-icp-backend");
   const { principal } = useConnect();
 
   const [products, setProducts] = useState([]);
@@ -39,7 +39,6 @@ const Products = () => {
     const tipo = form.tipo.value;
 
     setLoading("Actualizando producto...");
-
     await marketplaceBackend.updateProducto(idProduct, nombre, precio, descripcion, artesano, tipo);
     setLoading("");
     setShowModalEditar(false);
@@ -61,7 +60,7 @@ const Products = () => {
     }
   };
 
-  const handleShowModalEliminar = (idProducto, productName) => {
+  const handleShowModalEliminar = (idProducto) => {
     setIdProduct(idProducto);
     setShowModalEliminar(true);
   };
@@ -115,7 +114,7 @@ const Products = () => {
                           <button
                             type="button"
                             className="btn btn-danger"
-                            onClick={() => handleShowModalEliminar(product.id, product.nombre)}
+                            onClick={() => handleShowModalEliminar(product.id)}
                           >
                             Eliminar
                           </button>
@@ -174,10 +173,10 @@ const Products = () => {
           {/* Modal para eliminar producto */}
           <Modal show={showModalEliminar} onHide={() => setShowModalEliminar(false)}>
             <Modal.Header closeButton>
-              <Modal.Title>Eliminar producto</Modal.Title>
+              <Modal.Title>Confirmación</Modal.Title>
             </Modal.Header>
             <Modal.Body>
-              ¿Estás seguro que deseas eliminar este producto?
+              <p>¿Estás seguro que deseas eliminar este producto?</p>
             </Modal.Body>
             <Modal.Footer>
               <Button variant="secondary" onClick={() => setShowModalEliminar(false)}>

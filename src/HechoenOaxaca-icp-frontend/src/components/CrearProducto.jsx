@@ -2,7 +2,6 @@ import { useCanister } from "@connect2ic/react";
 import React, { useState } from "react";
 
 const CrearProducto = () => {
-  //const [HechoenOaxaca-icp-backend] = useCanister("HechoenOaxaca-icp-backend");
   const [marketplaceBackend] = useCanister("HechoenOaxaca-icp-backend");
   const [loading, setLoading] = useState("");
   const [images, setImages] = useState([]);
@@ -37,32 +36,39 @@ const CrearProducto = () => {
     setLoading("");
     setImages([]);
     form.reset();
+
+    // Simulación de redirección al listado de productos al guardar
+    document.getElementById('btnProductList').click();
   };
 
   return (
     <div className="row mt-5">
       <div className="col-2"></div>
       <div className="col-8">
-        {loading && <div className="alert alert-primary">{loading}</div>}
+        {loading !== "" ? (
+          <div className="alert alert-primary">{loading}</div>
+        ) : (
+          <div></div>
+        )}
         <div className="card">
           <div className="card-header">Registrar Producto</div>
           <div className="card-body">
-            <form onSubmit={saveProduct}>
+            <form onSubmit={saveProduct} style={{ display: "inline" }}>
               <div className="form-group">
                 <label htmlFor="nombre">Nombre del Producto</label>
-                <input type="text" className="form-control" id="nombre" required />
+                <input type="text" className="form-control" id="nombre" placeholder="Ej: Olla de barro" required />
               </div>
               <div className="form-group">
                 <label htmlFor="precio">Precio</label>
-                <input type="number" step="0.01" className="form-control" id="precio" required />
+                <input type="number" step="0.01" className="form-control" id="precio" placeholder="Ej: 15.99" required />
               </div>
               <div className="form-group">
                 <label htmlFor="descripcion">Descripción</label>
-                <input type="text" className="form-control" id="descripcion" required />
+                <input type="text" className="form-control" id="descripcion" placeholder="Descripción breve" required />
               </div>
               <div className="form-group">
                 <label htmlFor="artesano">Nombre del Artesano</label>
-                <input type="text" className="form-control" id="artesano" required />
+                <input type="text" className="form-control" id="artesano" placeholder="Nombre del artesano" required />
               </div>
               <div className="form-group">
                 <label htmlFor="tipo">Tipo de Producto</label>
@@ -76,8 +82,13 @@ const CrearProducto = () => {
                 <label htmlFor="imagenes">Subir Imágenes (Máximo 3)</label>
                 <input type="file" className="form-control" id="imagenes" accept="image/*" multiple onChange={handleImageChange} />
               </div>
-              <button type="submit" className="btn btn-success mt-3">Agregar Producto</button>
+              <br />
+              <div className="form-group">
+                <input type="submit" className="btn btn-success" value="Agregar Producto" />
+              </div>
             </form>
+            {/* Botón invisible para simular la redirección al listado */}
+            <button id="btnProductList" style={{ display: "none" }}>Ir al listado de productos</button>
           </div>
         </div>
       </div>
@@ -86,5 +97,4 @@ const CrearProducto = () => {
   );
 };
 
-// Asegúrate de que el nombre coincida con el del componente
 export default CrearProducto;
