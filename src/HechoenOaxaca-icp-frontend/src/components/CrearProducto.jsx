@@ -36,7 +36,7 @@ const CrearProducto = () => {
     setLoading("");
     setImages([]);
     form.reset();
-
+    navigate("/productos"); // Redirige a la lista de productos
     // Simulación de redirección al listado de productos al guardar
     document.getElementById('btnProductList').click();
   };

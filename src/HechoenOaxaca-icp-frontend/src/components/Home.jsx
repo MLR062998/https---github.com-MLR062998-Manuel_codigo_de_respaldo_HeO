@@ -4,20 +4,22 @@ import React, { useEffect, useState } from "react";
 import Card from "react-bootstrap/Card";
 import Button from "react-bootstrap/Button";
 import "bootstrap/dist/css/bootstrap.min.css";
+import Compra from './Compra';
 
 const Home = () => {
-  const [marketplaceBackend] = useCanister("HechoenOaxaca-icp-backend"); // Conecta al canister del backend
+  const [marketplaceBackend] = useCanister('HechoenOaxaca-icp-backend');
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [selectedProduct, setSelectedProduct] = useState(null);
+  const [showModal, setShowModal] = useState(false);
 
-  // Función para obtener los productos al cargar el componente
   const fetchProducts = async () => {
     setLoading(true);
     try {
       const productsRes = await marketplaceBackend.readProductos();
       setProducts(productsRes);
     } catch (error) {
-      console.error("Error al cargar productos:", error);
+      console.error('Error al cargar productos:', error);
     } finally {
       setLoading(false);
     }
@@ -26,6 +28,17 @@ const Home = () => {
   useEffect(() => {
     fetchProducts();
   }, []);
+
+  const handleShowDetails = (product) => {
+    setSelectedProduct(product);
+    setShowModal(true);
+  };
+
+  const handlePurchase = (product) => {
+    // Lógica de compra aquí
+    alert(`Compraste el producto: ${product.nombre}`);
+    setShowModal(false);
+  };
 
   return (
     <section className="mt-5 text-center">
@@ -44,9 +57,10 @@ const Home = () => {
                       Artesano: {product.artesano}
                     </Card.Subtitle>
                     <Card.Text>{product.descripcion}</Card.Text>
-                    <Card.Text>Precio: ${product.precio}</Card.Text>
-                    <Card.Text>Tipo: {product.tipo}</Card.Text>
-                    <Button variant="primary">Ver Detalles</Button>
+                    <Card.Text>Precio: ICP {product.precio}</Card.Text>
+                    <Button variant="primary" onClick={() => handleShowDetails(product)}>
+                      Ver Detalles
+                    </Button>
                   </Card.Body>
                 </Card>
               </div>
@@ -54,6 +68,14 @@ const Home = () => {
           </div>
         )}
       </div>
+
+      {/* Modal de detalles del producto */}
+      <Compra
+        show={showModal}
+        onClose={() => setShowModal(false)}
+        product={selectedProduct}
+        onPurchase={handlePurchase}
+      />
     </section>
   );
 };
