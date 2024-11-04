@@ -53,10 +53,8 @@ const Home = () => {
                 <Card>
                   <Card.Body>
                     <Card.Title>{product.nombre}</Card.Title>
-                    <Card.Subtitle className="mb-2 text-muted">
-                      Artesano: {product.artesano}
-                    </Card.Subtitle>
-                    <Card.Text>{product.descripcion}</Card.Text>
+                    
+                    <Card.Text>{product.descripcion}</Card.Text>  
                     <Card.Text>Precio: ICP {product.precio}</Card.Text>
                     <Button variant="primary" onClick={() => handleShowDetails(product)}>
                       Ver Detalles

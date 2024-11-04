@@ -1,8 +1,14 @@
-import { useCanister, useConnect } from "@connect2ic/react";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react"; 
+import { useCanister } from "@connect2ic/react";
+import { useConnect } from "@connect2ic/react";
 import Home from './Home';
 import Button from 'react-bootstrap/Button';
 import Modal from 'react-bootstrap/Modal';
+import { createMachine } from 'xstate';
+
+const myMachine = createMachine({
+  predictableActionArguments: true,
+});
 
 const Products = () => {
   const [marketplaceBackend] = useCanister("HechoenOaxaca-icp-backend");
@@ -13,6 +19,7 @@ const Products = () => {
   const [idProduct, setIdProduct] = useState("");
   const [showModalEditar, setShowModalEditar] = useState(false);
   const [showModalEliminar, setShowModalEliminar] = useState(false);
+  const [selectedImages, setSelectedImages] = useState([]);
 
   const fetchProducts = async () => {
     setLoading("Cargando...");
@@ -30,6 +37,15 @@ const Products = () => {
     fetchProducts();
   }, []);
 
+  const handleImageChange = (e) => {
+    const files = Array.from(e.target.files);
+    if (files.length > 3) {
+      alert("Puedes subir un máximo de 3 imágenes.");
+      return;
+    }
+    setSelectedImages(files);
+  };
+
   const updateProduct = async () => {
     const form = document.getElementById("formEditar");
     const nombre = form.nombre.value;
@@ -39,7 +55,14 @@ const Products = () => {
     const tipo = form.tipo.value;
 
     setLoading("Actualizando producto...");
-    await marketplaceBackend.updateProducto(idProduct, nombre, precio, descripcion, artesano, tipo);
+
+    const imageBlobs = await Promise.all(
+      selectedImages.map((image) =>
+        image.arrayBuffer().then((buffer) => new Blob([buffer], { type: image.type }))
+      )
+    );
+
+    await marketplaceBackend.updateProducto(idProduct, nombre, precio, descripcion, artesano, tipo, imageBlobs);
     setLoading("");
     setShowModalEditar(false);
     fetchProducts();
@@ -89,6 +112,7 @@ const Products = () => {
                       <th>Precio</th>
                       <th>Descripción</th>
                       <th>Artesano</th>
+                      <th>Imágenes</th> {/* Columna nueva para las imágenes */}
                       <th>Tipo</th>
                       <th colSpan="2">Opciones</th>
                     </tr>
@@ -100,6 +124,21 @@ const Products = () => {
                         <td>{product.precio}</td>
                         <td>{product.descripcion}</td>
                         <td>{product.artesano}</td>
+                        {/* Muestra las imágenes */}
+                        <td>
+                          {product.imagenes && product.imagenes.length > 0 ? (
+                            product.imagenes.map((imagen, index) => (
+                              <img 
+                                key={index} 
+                                src={URL.createObjectURL(imagen)} 
+                                alt={`Imagen de ${product.nombre}`} 
+                                style={{ maxWidth: "50px", maxHeight: "50px", marginRight: "5px" }} 
+                              />
+                            ))
+                          ) : (
+                            <span>Sin imagen</span>
+                          )}
+                        </td>
                         <td>{product.tipo}</td>
                         <td>
                           <button
@@ -125,68 +164,72 @@ const Products = () => {
                 </table>
               </div>
             </div>
+
+            {/* Modal para editar producto */}
+            <Modal show={showModalEditar} onHide={() => setShowModalEditar(false)}>
+              <Modal.Header closeButton>
+                <Modal.Title>Actualizar producto</Modal.Title>
+              </Modal.Header>
+              <Modal.Body>
+                <form id="formEditar">
+                  <div className="form-group">
+                    <label htmlFor="nombre">Nombre del producto</label>
+                    <input type="text" className="form-control" id="nombre" />
+                  </div>
+                  <div className="form-group">
+                    <label htmlFor="precio">Precio</label>
+                    <input type="number" step="0.01" className="form-control" id="precio" />
+                  </div>
+                  <div className="form-group">
+                    <label htmlFor="descripcion">Descripción</label>
+                    <input type="text" className="form-control" id="descripcion" />
+                  </div>
+                  <div className="form-group">
+                    <label htmlFor="artesano">Nombre del artesano</label>
+                    <input type="text" className="form-control" id="artesano" />
+                  </div>
+                  <div className="form-group">
+                    <label htmlFor="tipo">Tipo de producto</label>
+                    <select className="form-control" id="tipo">
+                      <option value="textil">Textil</option>
+                      <option value="artesania">Artesanía</option>
+                      <option value="dulces">Dulces tradicionales</option>
+                    </select>
+                  </div>
+                  <div className="form-group">
+                    <label htmlFor="imagenes">Imágenes (máximo 3)</label>
+                    <input type="file" className="form-control" id="imagenes" accept="image/*" multiple onChange={handleImageChange} />
+                  </div>
+                </form>
+              </Modal.Body>
+              <Modal.Footer>
+                <Button variant="secondary" onClick={() => setShowModalEditar(false)}>
+                  Cerrar
+                </Button>
+                <Button variant="primary" onClick={updateProduct}>
+                  Guardar
+                </Button>
+              </Modal.Footer>
+            </Modal>
+
+            {/* Modal para eliminar producto */}
+            <Modal show={showModalEliminar} onHide={() => setShowModalEliminar(false)}>
+              <Modal.Header closeButton>
+                <Modal.Title>Confirmación</Modal.Title>
+              </Modal.Header>
+              <Modal.Body>
+                <p>¿Estás seguro que deseas eliminar este producto?</p>
+              </Modal.Body>
+              <Modal.Footer>
+                <Button variant="secondary" onClick={() => setShowModalEliminar(false)}>
+                  Cancelar
+                </Button>
+                <Button variant="danger" onClick={deleteProduct}>
+                  Eliminar
+                </Button>
+              </Modal.Footer>
+            </Modal>
           </div>
-
-          {/* Modal para editar producto */}
-          <Modal show={showModalEditar} onHide={() => setShowModalEditar(false)}>
-            <Modal.Header closeButton>
-              <Modal.Title>Actualizar producto</Modal.Title>
-            </Modal.Header>
-            <Modal.Body>
-              <form id="formEditar">
-                <div className="form-group">
-                  <label htmlFor="nombre">Nombre del producto</label>
-                  <input type="text" className="form-control" id="nombre" />
-                </div>
-                <div className="form-group">
-                  <label htmlFor="precio">Precio</label>
-                  <input type="number" step="0.01" className="form-control" id="precio" />
-                </div>
-                <div className="form-group">
-                  <label htmlFor="descripcion">Descripción</label>
-                  <input type="text" className="form-control" id="descripcion" />
-                </div>
-                <div className="form-group">
-                  <label htmlFor="artesano">Nombre del artesano</label>
-                  <input type="text" className="form-control" id="artesano" />
-                </div>
-                <div className="form-group">
-                  <label htmlFor="tipo">Tipo de producto</label>
-                  <select className="form-control" id="tipo">
-                    <option value="textil">Textil</option>
-                    <option value="artesania">Artesanía</option>
-                    <option value="dulces">Dulces tradicionales</option>
-                  </select>
-                </div>
-              </form>
-            </Modal.Body>
-            <Modal.Footer>
-              <Button variant="secondary" onClick={() => setShowModalEditar(false)}>
-                Cerrar
-              </Button>
-              <Button variant="primary" onClick={updateProduct}>
-                Guardar
-              </Button>
-            </Modal.Footer>
-          </Modal>
-
-          {/* Modal para eliminar producto */}
-          <Modal show={showModalEliminar} onHide={() => setShowModalEliminar(false)}>
-            <Modal.Header closeButton>
-              <Modal.Title>Confirmación</Modal.Title>
-            </Modal.Header>
-            <Modal.Body>
-              <p>¿Estás seguro que deseas eliminar este producto?</p>
-            </Modal.Body>
-            <Modal.Footer>
-              <Button variant="secondary" onClick={() => setShowModalEliminar(false)}>
-                Cancelar
-              </Button>
-              <Button variant="danger" onClick={deleteProduct}>
-                Eliminar
-              </Button>
-            </Modal.Footer>
-          </Modal>
         </div>
       ) : (
         <Home />
