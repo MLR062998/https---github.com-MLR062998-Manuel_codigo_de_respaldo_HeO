@@ -1,3 +1,4 @@
+// App.js
 import React from 'react';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import Menu from './components/Menu';
@@ -9,12 +10,14 @@ import * as Productos_backend from 'declarations/HechoenOaxaca-icp-backend';
 import { createClient } from '@connect2ic/core';
 import { InternetIdentity } from '@connect2ic/core/providers/internet-identity';
 
-// Configurar el cliente
 const client = createClient({
   canisters: {
     'HechoenOaxaca-icp-backend': Productos_backend,
   },
-  providers: [new InternetIdentity()],
+  providers: [new InternetIdentity({ providerUrl: 'http://be2us-64aaa-aaaaa-qaabq-cai.localhost:4943/' })],
+  globalProviderConfig: {
+    dev: true,
+  },
 });
 
 function App() {
@@ -26,6 +29,7 @@ function App() {
           <Route path="/" element={<Home />} />
           <Route path="/nuevo-producto" element={<CrearProducto />} />
           <Route path="/productos" element={<Products />} />
+          {/* Otras rutas necesarias */}
         </Routes>
       </Router>
     </Connect2ICProvider>
