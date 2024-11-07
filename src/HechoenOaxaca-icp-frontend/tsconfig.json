@@ -15,7 +15,11 @@
     "isolatedModules": true,
     "noEmit": true,
     "jsx": "react-jsx",
-    "types": ["vite/client", "@types/node"]  // <-- Verifica esta línea
+    "types": ["vite/client", "@types/node"],
+    "baseUrl": ".",  // Configura la base como el directorio raíz
+    "paths": {
+      "*": ["src/*", "src/declarations/*"]  // Incluye src y src/declarations
+    }
   },
-  "include": ["src"]
+  "include": ["src", "src/declarations"]
 }
