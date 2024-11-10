@@ -10,6 +10,7 @@ import * as Productos_backend from 'declarations/HechoenOaxaca-icp-backend';
 import { createClient } from '@connect2ic/core';
 import { InternetIdentity } from '@connect2ic/core/providers/internet-identity';
 
+
 const client = createClient({
   canisters: {
     'HechoenOaxaca-icp-backend': Productos_backend,
