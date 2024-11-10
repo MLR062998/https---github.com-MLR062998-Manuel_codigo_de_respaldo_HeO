@@ -37,3 +37,16 @@ button[type="submit"] {
   display: none;
 }
 
+/* styles.css o en el archivo CSS de tu proyecto */
+.connect-dialog-custom {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+
+.connect-dialog-custom img {
+  max-width: 80px; /* Ajusta el tamaño del logo según tus necesidades */
+  margin-bottom: 1rem;
+}
