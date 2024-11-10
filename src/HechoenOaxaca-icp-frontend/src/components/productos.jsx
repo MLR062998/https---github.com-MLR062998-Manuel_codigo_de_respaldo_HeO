@@ -164,46 +164,74 @@ const Products = () => {
 
             {/* Modal para editar producto */}
             <Modal show={showModalEditar} onHide={() => setShowModalEditar(false)}>
-              <Modal.Header closeButton>
-                <Modal.Title>Actualizar producto</Modal.Title>
-              </Modal.Header>
-              <Modal.Body>
-                <form id="formEditar">
-                  <div className="form-group">
-                    <label htmlFor="nombre">Nombre del producto</label>
-                    <input type="text" className="form-control" id="nombre" />
-                  </div>
-                  <div className="form-group">
-                    <label htmlFor="precio">Precio</label>
-                    <input type="number" step="0.01" className="form-control" id="precio" />
-                  </div>
-                  <div className="form-group">
-                    <label htmlFor="descripcion">Descripción</label>
-                    <input type="text" className="form-control" id="descripcion" />
-                  </div>
-                  <div className="form-group">
-                    <label htmlFor="artesano">Nombre del artesano</label>
-                    <input type="text" className="form-control" id="artesano" />
-                  </div>
-                  <div className="form-group">
-                    <label htmlFor="tipo">Tipo de producto</label>
-                    <select className="form-control" id="tipo">
-                      <option value="textil">Textil</option>
-                      <option value="artesania">Artesanía</option>
-                      <option value="dulces">Dulces tradicionales</option>
-                    </select>
-                  </div>
-                  <div className="form-group">
-                    <label htmlFor="imagenes">Imágenes (máximo 3)</label>
-                    <input type="file" className="form-control" id="imagenes" accept="image/*" multiple onChange={handleImageChange} />
-                  </div>
-                </form>
-              </Modal.Body>
-              <Modal.Footer>
-                <Button variant="secondary" onClick={() => setShowModalEditar(false)}>Cerrar</Button>
-                <Button variant="primary" onClick={updateProduct}>Guardar</Button>
-              </Modal.Footer>
-            </Modal>
+  <Modal.Header closeButton>
+    <Modal.Title>Actualizar producto</Modal.Title>
+  </Modal.Header>
+  <Modal.Body>
+    <form id="formEditar">
+      {/* Nombre del producto */}
+      <ul className="list-unstyled">
+        <li className="form-group mb-3">
+          <label htmlFor="nombre">Nombre del producto</label>
+          <input type="text" className="form-control" id="nombre" />
+        </li>
+        
+        {/* Precio */}
+        <li className="form-group mb-3">
+          <label htmlFor="precio">Precio</label>
+          <div className="input-group">
+            <span className="input-group-text">ICP</span>
+            <input type="number" step="0.01" className="form-control" id="precio" />
+          </div>
+        </li>
+
+        {/* Descripción */}
+        <li className="form-group mb-3">
+          <label htmlFor="descripcion">Descripción</label>
+          <input type="text" className="form-control" id="descripcion" />
+        </li>
+
+        {/* Nombre del artesano */}
+        <li className="form-group mb-3">
+          <label htmlFor="artesano">Nombre del artesano</label>
+          <input type="text" className="form-control" id="artesano" />
+        </li>
+
+        {/* Tipo de producto */}
+        <li className="form-group mb-3">
+          <label htmlFor="tipo">Tipo de producto</label>
+          <select className="form-control" id="tipo">
+            <option value="textil">Textil</option>
+            <option value="artesania">Artesanía</option>
+            <option value="dulces">Dulces tradicionales</option>
+          </select>
+        </li>
+
+        {/* Imágenes */}
+        <li className="form-group mb-3">
+          <label htmlFor="imagenes">Imágenes (máximo 3)</label>
+          <input
+            type="file"
+            className="form-control"
+            id="imagenes"
+            accept="image/*"
+            multiple
+            onChange={handleImageChange}
+          />
+        </li>
+      </ul>
+    </form>
+  </Modal.Body>
+  <Modal.Footer>
+    <Button variant="secondary" onClick={() => setShowModalEditar(false)}>
+      Cerrar
+    </Button>
+    <Button variant="primary" onClick={updateProduct}>
+      Guardar
+    </Button>
+  </Modal.Footer>
+</Modal>
+
 
             {/* Modal para eliminar producto */}
             <Modal show={showModalEliminar} onHide={() => setShowModalEliminar(false)}>
