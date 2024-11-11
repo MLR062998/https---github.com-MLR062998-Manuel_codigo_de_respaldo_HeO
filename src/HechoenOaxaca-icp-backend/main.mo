@@ -87,7 +87,8 @@ actor HechoenOaxacaBackend {
         precio: Float,
         descripcion: Text,
         artesano: Text,
-        tipo: Text
+        tipo: Text,
+        imagenes: [Blob]
     ): async Result.Result<Producto, AplicationError> {
         switch (productos_table.get(id)) {
             case (?productoExistente) {
