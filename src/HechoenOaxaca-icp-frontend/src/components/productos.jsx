@@ -1,3 +1,4 @@
+// Products.js
 import React, { useEffect, useState } from "react";
 import { useCanister, useConnect } from "@connect2ic/react";
 import Button from "react-bootstrap/Button";
@@ -11,12 +12,10 @@ const Products = () => {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState("");
   const [idProduct, setIdProduct] = useState("");
-  const [selectedImages, setSelectedImages] = useState([]);
-
   const [showModalEditar, setShowModalEditar] = useState(false);
   const [showModalEliminar, setShowModalEliminar] = useState(false);
+  const [selectedImages, setSelectedImages] = useState([]);
 
-  // Cargar productos desde el backend
   const fetchProducts = async () => {
     setLoading("Cargando...");
     try {
@@ -33,7 +32,6 @@ const Products = () => {
     fetchProducts();
   }, []);
 
-  // Manejar cambio de imágenes
   const handleImageChange = (e) => {
     const files = Array.from(e.target.files);
     if (files.length > 3) {
@@ -43,7 +41,6 @@ const Products = () => {
     setSelectedImages(files);
   };
 
-  // Actualizar producto
   const updateProduct = async () => {
     const form = document.getElementById("formEditar");
     const nombre = form.nombre.value;
@@ -53,7 +50,6 @@ const Products = () => {
     const tipo = form.tipo.value;
 
     setLoading("Actualizando producto...");
-
     const imageBlobs = await Promise.all(
       selectedImages.map((image) =>
         image.arrayBuffer().then((buffer) => new Blob([buffer], { type: image.type }))
@@ -66,7 +62,6 @@ const Products = () => {
     fetchProducts();
   };
 
-  // Mostrar modal de edición
   const handleShowModalEditar = async (idProducto) => {
     setShowModalEditar(true);
     setIdProduct(idProducto);
@@ -74,15 +69,19 @@ const Products = () => {
 
     if (producto) {
       const form = document.getElementById("formEditar");
-      form.nombre.value = producto.nombre;
-      form.precio.value = producto.precio;
-      form.descripcion.value = producto.descripcion;
-      form.artesano.value = producto.artesano;
-      form.tipo.value = producto.tipo;
+      form.nombre.value = producto[0].nombre;
+      form.precio.value = producto[0].precio;
+      form.descripcion.value = producto[0].descripcion;
+      form.artesano.value = producto[0].artesano;
+      form.tipo.value = producto[0].tipo;
     }
   };
 
-  // Eliminar producto
+  const handleShowModalEliminar = (idProducto) => {
+    setShowModalEliminar(true);
+    setIdProduct(idProducto);
+  };
+
   const deleteProduct = async () => {
     setLoading("Eliminando producto...");
     await marketplaceBackend.deleteProducto(idProduct);
@@ -121,17 +120,14 @@ const Products = () => {
                         <td>{product.artesano}</td>
                         <td>
                           {product.imagenes && product.imagenes.length > 0 ? (
-                            product.imagenes.map((imagen, index) => {
-                              const blob = new Blob([imagen], { type: "image/jpeg" });
-                              return (
-                                <img
-                                  key={index}
-                                  src={URL.createObjectURL(blob)}
-                                  alt={`Imagen de ${product.nombre}`}
-                                  style={{ maxWidth: "50px", maxHeight: "50px", marginRight: "5px" }}
-                                />
-                              );
-                            })
+                            product.imagenes.map((imagen, index) => (
+                              <img
+                                key={index}
+                                src={URL.createObjectURL(imagen)}
+                                alt={`Imagen de ${product.nombre}`}
+                                style={{ maxWidth: "50px", maxHeight: "50px", marginRight: "5px" }}
+                              />
+                            ))
                           ) : (
                             <span>Sin imagen</span>
                           )}
@@ -150,7 +146,7 @@ const Products = () => {
                           <button
                             type="button"
                             className="btn btn-danger"
-                            onClick={() => setShowModalEliminar(true) && setIdProduct(product.id)}
+                            onClick={() => handleShowModalEliminar(product.id)}
                           >
                             Eliminar
                           </button>
@@ -169,14 +165,12 @@ const Products = () => {
   </Modal.Header>
   <Modal.Body>
     <form id="formEditar">
-      {/* Nombre del producto */}
       <ul className="list-unstyled">
         <li className="form-group mb-3">
           <label htmlFor="nombre">Nombre del producto</label>
           <input type="text" className="form-control" id="nombre" />
         </li>
         
-        {/* Precio */}
         <li className="form-group mb-3">
           <label htmlFor="precio">Precio</label>
           <div className="input-group">
@@ -185,19 +179,16 @@ const Products = () => {
           </div>
         </li>
 
-        {/* Descripción */}
         <li className="form-group mb-3">
           <label htmlFor="descripcion">Descripción</label>
           <input type="text" className="form-control" id="descripcion" />
         </li>
 
-        {/* Nombre del artesano */}
         <li className="form-group mb-3">
           <label htmlFor="artesano">Nombre del artesano</label>
           <input type="text" className="form-control" id="artesano" />
         </li>
 
-        {/* Tipo de producto */}
         <li className="form-group mb-3">
           <label htmlFor="tipo">Tipo de producto</label>
           <select className="form-control" id="tipo">
@@ -207,7 +198,6 @@ const Products = () => {
           </select>
         </li>
 
-        {/* Imágenes */}
         <li className="form-group mb-3">
           <label htmlFor="imagenes">Imágenes (máximo 3)</label>
           <input
@@ -230,20 +220,21 @@ const Products = () => {
       Guardar
     </Button>
   </Modal.Footer>
-</Modal>
-
+  </Modal>
 
             {/* Modal para eliminar producto */}
             <Modal show={showModalEliminar} onHide={() => setShowModalEliminar(false)}>
               <Modal.Header closeButton>
                 <Modal.Title>Confirmación</Modal.Title>
               </Modal.Header>
-              <Modal.Body>
-                <p>¿Estás seguro que deseas eliminar este producto?</p>
-              </Modal.Body>
+              <Modal.Body>¿Seguro que quieres eliminar este producto?</Modal.Body>
               <Modal.Footer>
-                <Button variant="secondary" onClick={() => setShowModalEliminar(false)}>Cancelar</Button>
-                <Button variant="danger" onClick={deleteProduct}>Eliminar</Button>
+                <Button variant="secondary" onClick={() => setShowModalEliminar(false)}>
+                  Cancelar
+                </Button>
+                <Button variant="danger" onClick={deleteProduct}>
+                  Eliminar
+                </Button>
               </Modal.Footer>
             </Modal>
           </div>
