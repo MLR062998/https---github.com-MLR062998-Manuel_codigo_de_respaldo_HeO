@@ -1,6 +1,7 @@
 // Home.jsx
 import { useCanister } from "@connect2ic/react";
 import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import Card from "react-bootstrap/Card";
 import Button from "react-bootstrap/Button";
 import "bootstrap/dist/css/bootstrap.min.css";
@@ -12,6 +13,7 @@ const Home = () => {
   const [loading, setLoading] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [showModal, setShowModal] = useState(false);
+  const navigate = useNavigate();
 
   const fetchProducts = async () => {
     setLoading(true);
@@ -35,9 +37,8 @@ const Home = () => {
   };
 
   const handlePurchase = (product) => {
-    // Lógica de compra aquí
-    alert(`Compraste el producto: ${product.nombre}`);
     setShowModal(false);
+    navigate('/compra', { state: { product } }); // Redirige a PrincipaldeCompra con los datos del producto
   };
 
   return (
@@ -53,7 +54,6 @@ const Home = () => {
                 <Card>
                   <Card.Body>
                     <Card.Title>{product.nombre}</Card.Title>
-                    
                     <Card.Text>{product.descripcion}</Card.Text>  
                     <Card.Text>Precio: ICP {product.precio}</Card.Text>
                     <Button variant="primary" onClick={() => handleShowDetails(product)}>

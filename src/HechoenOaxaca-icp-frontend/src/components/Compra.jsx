@@ -16,15 +16,10 @@ const Compra = ({ show, onClose, product, onPurchase }) => {
         <p><strong>Descripción:</strong> {product.descripcion}</p>
         <p><strong>Tipo:</strong> {product.tipo}</p>
         <p><strong>Precio:</strong> ICP {product.precio}</p>
-        {/* Aquí puedes agregar más detalles si es necesario */}
       </Modal.Body>
       <Modal.Footer>
-        <Button variant="secondary" onClick={onClose}>
-          Cerrar
-        </Button>
-        <Button variant="primary" onClick={() => onPurchase(product)}>
-          Comprar
-        </Button>
+        <Button variant="secondary" onClick={onClose}>Cerrar</Button>
+        <Button variant="primary" onClick={() => onPurchase(product)}>Comprar</Button>
       </Modal.Footer>
     </Modal>
   );
