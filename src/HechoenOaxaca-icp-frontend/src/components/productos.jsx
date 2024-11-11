@@ -1,4 +1,3 @@
-// Products.js
 import React, { useEffect, useState } from "react";
 import { useCanister, useConnect } from "@connect2ic/react";
 import Button from "react-bootstrap/Button";
@@ -16,6 +15,7 @@ const Products = () => {
   const [showModalEliminar, setShowModalEliminar] = useState(false);
   const [selectedImages, setSelectedImages] = useState([]);
 
+  // Cargar productos desde el backend
   const fetchProducts = async () => {
     setLoading("Cargando...");
     try {
@@ -23,7 +23,7 @@ const Products = () => {
       setProducts(productsRes);
       setLoading("");
     } catch (e) {
-      console.log(e);
+      console.error("Error al cargar productos:", e);
       setLoading("Error al cargar los productos.");
     }
   };
@@ -32,6 +32,7 @@ const Products = () => {
     fetchProducts();
   }, []);
 
+  // Manejar cambio de imágenes
   const handleImageChange = (e) => {
     const files = Array.from(e.target.files);
     if (files.length > 3) {
@@ -41,6 +42,7 @@ const Products = () => {
     setSelectedImages(files);
   };
 
+  // Actualizar producto
   const updateProduct = async () => {
     const form = document.getElementById("formEditar");
     const nombre = form.nombre.value;
@@ -50,18 +52,27 @@ const Products = () => {
     const tipo = form.tipo.value;
 
     setLoading("Actualizando producto...");
-    const imageBlobs = await Promise.all(
-      selectedImages.map((image) =>
-        image.arrayBuffer().then((buffer) => new Blob([buffer], { type: image.type }))
-      )
-    );
+    
+    try {
+      const imageBlobs = await Promise.all(
+        selectedImages.map((image) =>
+          image.arrayBuffer().then((buffer) => new Blob([buffer], { type: image.type }))
+        )
+      );
 
-    await marketplaceBackend.updateProducto(idProduct, nombre, precio, descripcion, artesano, tipo, imageBlobs);
-    setLoading("");
-    setShowModalEditar(false);
-    fetchProducts();
+      // Asegúrate de que el método `updateProducto` en el backend soporte `imageBlobs` como argumento
+      await marketplaceBackend.updateProducto(idProduct, nombre, precio, descripcion, artesano, tipo, imageBlobs);
+      
+      setLoading("");
+      setShowModalEditar(false);
+      fetchProducts(); // Actualizar lista después de edición
+    } catch (error) {
+      console.error("Error al actualizar producto:", error);
+      setLoading("Error al actualizar el producto. Intenta nuevamente.");
+    }
   };
 
+  // Mostrar modal de edición
   const handleShowModalEditar = async (idProducto) => {
     setShowModalEditar(true);
     setIdProduct(idProducto);
@@ -84,10 +95,15 @@ const Products = () => {
 
   const deleteProduct = async () => {
     setLoading("Eliminando producto...");
-    await marketplaceBackend.deleteProducto(idProduct);
-    setLoading("");
-    setShowModalEliminar(false);
-    fetchProducts();
+    try {
+      await marketplaceBackend.deleteProducto(idProduct);
+      setShowModalEliminar(false);
+      fetchProducts();
+      setLoading("");
+    } catch (error) {
+      console.error("Error al eliminar producto:", error);
+      setLoading("Error al eliminar el producto. Intenta nuevamente.");
+    }
   };
 
   return (
@@ -160,67 +176,62 @@ const Products = () => {
 
             {/* Modal para editar producto */}
             <Modal show={showModalEditar} onHide={() => setShowModalEditar(false)}>
-  <Modal.Header closeButton>
-    <Modal.Title>Actualizar producto</Modal.Title>
-  </Modal.Header>
-  <Modal.Body>
-    <form id="formEditar">
-      <ul className="list-unstyled">
-        <li className="form-group mb-3">
-          <label htmlFor="nombre">Nombre del producto</label>
-          <input type="text" className="form-control" id="nombre" />
-        </li>
-        
-        <li className="form-group mb-3">
-          <label htmlFor="precio">Precio</label>
-          <div className="input-group">
-            <span className="input-group-text">ICP</span>
-            <input type="number" step="0.01" className="form-control" id="precio" />
-          </div>
-        </li>
-
-        <li className="form-group mb-3">
-          <label htmlFor="descripcion">Descripción</label>
-          <input type="text" className="form-control" id="descripcion" />
-        </li>
-
-        <li className="form-group mb-3">
-          <label htmlFor="artesano">Nombre del artesano</label>
-          <input type="text" className="form-control" id="artesano" />
-        </li>
-
-        <li className="form-group mb-3">
-          <label htmlFor="tipo">Tipo de producto</label>
-          <select className="form-control" id="tipo">
-            <option value="textil">Textil</option>
-            <option value="artesania">Artesanía</option>
-            <option value="dulces">Dulces tradicionales</option>
-          </select>
-        </li>
-
-        <li className="form-group mb-3">
-          <label htmlFor="imagenes">Imágenes (máximo 3)</label>
-          <input
-            type="file"
-            className="form-control"
-            id="imagenes"
-            accept="image/*"
-            multiple
-            onChange={handleImageChange}
-          />
-        </li>
-      </ul>
-    </form>
-  </Modal.Body>
-  <Modal.Footer>
-    <Button variant="secondary" onClick={() => setShowModalEditar(false)}>
-      Cerrar
-    </Button>
-    <Button variant="primary" onClick={updateProduct}>
-      Guardar
-    </Button>
-  </Modal.Footer>
-  </Modal>
+              <Modal.Header closeButton>
+                <Modal.Title>Actualizar producto</Modal.Title>
+              </Modal.Header>
+              <Modal.Body>
+                <form id="formEditar">
+                  <ul className="list-unstyled">
+                    <li className="form-group mb-3">
+                      <label htmlFor="nombre">Nombre del producto</label>
+                      <input type="text" className="form-control" id="nombre" />
+                    </li>
+                    <li className="form-group mb-3">
+                      <label htmlFor="precio">Precio</label>
+                      <div className="input-group">
+                        <span className="input-group-text">ICP</span>
+                        <input type="number" step="0.01" className="form-control" id="precio" />
+                      </div>
+                    </li>
+                    <li className="form-group mb-3">
+                      <label htmlFor="descripcion">Descripción</label>
+                      <input type="text" className="form-control" id="descripcion" />
+                    </li>
+                    <li className="form-group mb-3">
+                      <label htmlFor="artesano">Nombre del artesano</label>
+                      <input type="text" className="form-control" id="artesano" />
+                    </li>
+                    <li className="form-group mb-3">
+                      <label htmlFor="tipo">Tipo de producto</label>
+                      <select className="form-control" id="tipo">
+                        <option value="textil">Textil</option>
+                        <option value="artesania">Artesanía</option>
+                        <option value="dulces">Dulces tradicionales</option>
+                      </select>
+                    </li>
+                    <li className="form-group mb-3">
+                      <label htmlFor="imagenes">Imágenes (máximo 3)</label>
+                      <input
+                        type="file"
+                        className="form-control"
+                        id="imagenes"
+                        accept="image/*"
+                        multiple
+                        onChange={handleImageChange}
+                      />
+                    </li>
+                  </ul>
+                </form>
+              </Modal.Body>
+              <Modal.Footer>
+                <Button variant="secondary" onClick={() => setShowModalEditar(false)}>
+                  Cerrar
+                </Button>
+                <Button variant="primary" onClick={updateProduct}>
+                  Guardar
+                </Button>
+              </Modal.Footer>
+            </Modal>
 
             {/* Modal para eliminar producto */}
             <Modal show={showModalEliminar} onHide={() => setShowModalEliminar(false)}>
