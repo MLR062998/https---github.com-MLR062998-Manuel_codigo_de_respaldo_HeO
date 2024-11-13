@@ -1,3 +1,4 @@
+//PrincipaldeCompra.jsx
 import React, { useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 
@@ -96,7 +97,7 @@ const PrincipaldeCompra = () => {
                 {errors.city && <div className="invalid-feedback">{errors.city}</div>}
               </li>
               <li className="list-group-item">
-                <label htmlFor="state" className="form-label">Estado/Provincia</label>
+                <label htmlFor="state" className="form-label">Estado</label>
                 <input
                   type="text"
                   className={`form-control ${errors.state ? 'is-invalid' : ''}`}
