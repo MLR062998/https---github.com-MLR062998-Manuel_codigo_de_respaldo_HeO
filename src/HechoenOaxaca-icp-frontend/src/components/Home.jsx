@@ -19,7 +19,16 @@ const Home = () => {
     setLoading(true);
     try {
       const productsRes = await marketplaceBackend.readProductos();
-      setProducts(productsRes);
+      
+      // Procesar las imágenes en productos para que sean utilizables en el frontend
+      const processedProducts = productsRes.map(product => ({
+        ...product,
+        imagenes: product.imagenes.map(imagen =>
+          URL.createObjectURL(new Blob([new Uint8Array(imagen)], { type: "image/jpeg" }))
+        )
+      }));
+
+      setProducts(processedProducts);
     } catch (error) {
       console.error('Error al cargar productos:', error);
     } finally {
@@ -52,9 +61,17 @@ const Home = () => {
             {products.map((product) => (
               <div key={product.id} className="col-md-4 mb-4">
                 <Card>
+                  {product.imagenes.length > 0 && (
+                    <Card.Img
+                      variant="top"
+                      src={product.imagenes[0]} // Muestra la primera imagen
+                      alt={`Imagen de ${product.nombre}`}
+                      style={{ maxHeight: "200px", objectFit: "cover" }}
+                    />
+                  )}
                   <Card.Body>
                     <Card.Title>{product.nombre}</Card.Title>
-                    <Card.Text>{product.descripcion}</Card.Text>  
+                    <Card.Text>{product.descripcion}</Card.Text>
                     <Card.Text>Precio: ICP {product.precio}</Card.Text>
                     <Button variant="primary" onClick={() => handleShowDetails(product)}>
                       Ver Detalles
@@ -79,3 +96,4 @@ const Home = () => {
 };
 
 export default Home;
+
