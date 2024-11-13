@@ -1,6 +1,5 @@
-// Compra.jsx
 import React from 'react';
-import { Modal, Button } from 'react-bootstrap';
+import { Modal, Button, Carousel } from 'react-bootstrap';
 
 const Compra = ({ show, onClose, product, onPurchase }) => {
   if (!product) return null;
@@ -16,6 +15,21 @@ const Compra = ({ show, onClose, product, onPurchase }) => {
         <p><strong>Descripción:</strong> {product.descripcion}</p>
         <p><strong>Tipo:</strong> {product.tipo}</p>
         <p><strong>Precio:</strong> ICP {product.precio}</p>
+
+        {product.imagenes && product.imagenes.length > 0 && (
+          <Carousel>
+            {product.imagenes.map((imagen, index) => (
+              <Carousel.Item key={index}>
+                <img
+                  className="d-block w-100"
+                  src={imagen}
+                  alt={`Imagen ${index + 1} de ${product.nombre}`}
+                  style={{ maxHeight: '300px', objectFit: 'cover' }}
+                />
+              </Carousel.Item>
+            ))}
+          </Carousel>
+        )}
       </Modal.Body>
       <Modal.Footer>
         <Button variant="secondary" onClick={onClose}>Cerrar</Button>
