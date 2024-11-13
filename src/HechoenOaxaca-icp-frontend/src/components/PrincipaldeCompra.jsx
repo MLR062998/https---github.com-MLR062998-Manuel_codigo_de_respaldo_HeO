@@ -1,4 +1,3 @@
-//PrincipaldeCompra.jsx
 import React, { useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 
@@ -42,109 +41,107 @@ const PrincipaldeCompra = () => {
     return Object.keys(newErrors).length === 0;
   };
 
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setShippingAddress({ ...shippingAddress, [name]: value });
+  };
+
   const handleNextStep = () => {
     if (validateForm()) {
       navigate('/ConfirmacionPago', { state: { product, shippingAddress } });
     }
   };
 
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setShippingAddress({ ...shippingAddress, [name]: value });
-  };
-
   return (
     <div className="container mt-5">
       <h2 className="text-center mb-4">Dirección de Envío</h2>
       <div className="card mt-4">
-        <div className="card-body">
-          <form>
-            <ul className="list-group list-group-flush">
-              <li className="list-group-item">
-                <label htmlFor="name" className="form-label">Nombre Completo</label>
-                <input
-                  type="text"
-                  className={`form-control ${errors.name ? 'is-invalid' : ''}`}
-                  id="name"
-                  name="name"
-                  value={shippingAddress.name}
-                  onChange={handleChange}
-                />
-                {errors.name && <div className="invalid-feedback">{errors.name}</div>}
-              </li>
-              <li className="list-group-item">
-                <label htmlFor="street" className="form-label">Calle y Número</label>
-                <input
-                  type="text"
-                  className={`form-control ${errors.street ? 'is-invalid' : ''}`}
-                  id="street"
-                  name="street"
-                  value={shippingAddress.street}
-                  onChange={handleChange}
-                />
-                {errors.street && <div className="invalid-feedback">{errors.street}</div>}
-              </li>
-              <li className="list-group-item">
-                <label htmlFor="city" className="form-label">Ciudad</label>
-                <input
-                  type="text"
-                  className={`form-control ${errors.city ? 'is-invalid' : ''}`}
-                  id="city"
-                  name="city"
-                  value={shippingAddress.city}
-                  onChange={handleChange}
-                />
-                {errors.city && <div className="invalid-feedback">{errors.city}</div>}
-              </li>
-              <li className="list-group-item">
-                <label htmlFor="state" className="form-label">Estado</label>
-                <input
-                  type="text"
-                  className={`form-control ${errors.state ? 'is-invalid' : ''}`}
-                  id="state"
-                  name="state"
-                  value={shippingAddress.state}
-                  onChange={handleChange}
-                />
-                {errors.state && <div className="invalid-feedback">{errors.state}</div>}
-              </li>
-              <li className="list-group-item">
-                <label htmlFor="zip" className="form-label">Código Postal</label>
-                <input
-                  type="text"
-                  className={`form-control ${errors.zip ? 'is-invalid' : ''}`}
-                  id="zip"
-                  name="zip"
-                  value={shippingAddress.zip}
-                  onChange={handleChange}
-                />
-                {errors.zip && <div className="invalid-feedback">{errors.zip}</div>}
-              </li>
-              <li className="list-group-item">
-                <label htmlFor="country" className="form-label">País</label>
-                <input
-                  type="text"
-                  className={`form-control ${errors.country ? 'is-invalid' : ''}`}
-                  id="country"
-                  name="country"
-                  value={shippingAddress.country}
-                  onChange={handleChange}
-                />
-                {errors.country && <div className="invalid-feedback">{errors.country}</div>}
-              </li>
-              <li className="list-group-item">
-                <label htmlFor="phoneNumber" className="form-label">Número de Teléfono</label>
-                <input
-                  type="text"
-                  className={`form-control ${errors.phoneNumber ? 'is-invalid' : ''}`}
-                  id="phoneNumber"
-                  name="phoneNumber"
-                  value={shippingAddress.phoneNumber}
-                  onChange={handleChange}
-                />
-                {errors.phoneNumber && <div className="invalid-feedback">{errors.phoneNumber}</div>}
-              </li>
-            </ul>
+        <div className="card-body p-4">
+          <form onSubmit={(e) => e.preventDefault()}>
+            <div className="mb-4">
+              <label htmlFor="name" className="form-label">Nombre Completo</label>
+              <input
+                type="text"
+                className={`form-control ${errors.name ? 'is-invalid' : ''}`}
+                id="name"
+                name="name"
+                value={shippingAddress.name}
+                onChange={handleChange}
+              />
+              {errors.name && <div className="invalid-feedback">{errors.name}</div>}
+            </div>
+            <div className="mb-4">
+              <label htmlFor="street" className="form-label">Calle y Número</label>
+              <input
+                type="text"
+                className={`form-control ${errors.street ? 'is-invalid' : ''}`}
+                id="street"
+                name="street"
+                value={shippingAddress.street}
+                onChange={handleChange}
+              />
+              {errors.street && <div className="invalid-feedback">{errors.street}</div>}
+            </div>
+            <div className="mb-4">
+              <label htmlFor="city" className="form-label">Ciudad</label>
+              <input
+                type="text"
+                className={`form-control ${errors.city ? 'is-invalid' : ''}`}
+                id="city"
+                name="city"
+                value={shippingAddress.city}
+                onChange={handleChange}
+              />
+              {errors.city && <div className="invalid-feedback">{errors.city}</div>}
+            </div>
+            <div className="mb-4">
+              <label htmlFor="state" className="form-label">Estado</label>
+              <input
+                type="text"
+                className={`form-control ${errors.state ? 'is-invalid' : ''}`}
+                id="state"
+                name="state"
+                value={shippingAddress.state}
+                onChange={handleChange}
+              />
+              {errors.state && <div className="invalid-feedback">{errors.state}</div>}
+            </div>
+            <div className="mb-4">
+              <label htmlFor="zip" className="form-label">Código Postal</label>
+              <input
+                type="text"
+                className={`form-control ${errors.zip ? 'is-invalid' : ''}`}
+                id="zip"
+                name="zip"
+                value={shippingAddress.zip}
+                onChange={handleChange}
+              />
+              {errors.zip && <div className="invalid-feedback">{errors.zip}</div>}
+            </div>
+            <div className="mb-4">
+              <label htmlFor="country" className="form-label">País</label>
+              <input
+                type="text"
+                className={`form-control ${errors.country ? 'is-invalid' : ''}`}
+                id="country"
+                name="country"
+                value={shippingAddress.country}
+                onChange={handleChange}
+              />
+              {errors.country && <div className="invalid-feedback">{errors.country}</div>}
+            </div>
+            <div className="mb-4">
+              <label htmlFor="phoneNumber" className="form-label">Número de Teléfono</label>
+              <input
+                type="text"
+                className={`form-control ${errors.phoneNumber ? 'is-invalid' : ''}`}
+                id="phoneNumber"
+                name="phoneNumber"
+                value={shippingAddress.phoneNumber}
+                onChange={handleChange}
+              />
+              {errors.phoneNumber && <div className="invalid-feedback">{errors.phoneNumber}</div>}
+            </div>
           </form>
         </div>
       </div>

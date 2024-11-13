@@ -20,7 +20,22 @@ const Products = () => {
     setLoading("Cargando...");
     try {
       const productsRes = await marketplaceBackend.readProductos();
-      setProducts(productsRes);
+
+      // Procesar imágenes
+      const processedProducts = productsRes.map((product) => ({
+        ...product,
+        imagenes: product.imagenes.map((img) => {
+          try {
+            const blob = new Blob([new Uint8Array(img)], { type: "image/jpeg" });
+            return URL.createObjectURL(blob);
+          } catch (error) {
+            console.error("Error procesando imagen:", error);
+            return null; // Si hay error, asignar null
+          }
+        }),
+      }));
+
+      setProducts(processedProducts);
       setLoading("");
     } catch (e) {
       console.error("Error al cargar productos:", e);
@@ -52,7 +67,7 @@ const Products = () => {
     const tipo = form.tipo.value;
 
     setLoading("Actualizando producto...");
-    
+
     try {
       const imageBlobs = await Promise.all(
         selectedImages.map((image) =>
@@ -60,12 +75,11 @@ const Products = () => {
         )
       );
 
-      // Asegúrate de que el método `updateProducto` en el backend soporte `imageBlobs` como argumento
       await marketplaceBackend.updateProducto(idProduct, nombre, precio, descripcion, artesano, tipo, imageBlobs);
-      
+
       setLoading("");
       setShowModalEditar(false);
-      fetchProducts(); // Actualizar lista después de edición
+      fetchProducts();
     } catch (error) {
       console.error("Error al actualizar producto:", error);
       setLoading("Error al actualizar el producto. Intenta nuevamente.");
@@ -135,15 +149,18 @@ const Products = () => {
                         <td>{product.descripcion}</td>
                         <td>{product.artesano}</td>
                         <td>
-                          {product.imagenes && product.imagenes.length > 0 ? (
-                            product.imagenes.map((imagen, index) => (
-                              <img
-                                key={index}
-                                src={URL.createObjectURL(imagen)}
-                                alt={`Imagen de ${product.nombre}`}
-                                style={{ maxWidth: "50px", maxHeight: "50px", marginRight: "5px" }}
-                              />
-                            ))
+                          {product.imagenes.length > 0 ? (
+                            product.imagenes.map(
+                              (src, index) =>
+                                src && (
+                                  <img
+                                    key={index}
+                                    src={src}
+                                    alt={`Imagen de ${product.nombre}`}
+                                    style={{ maxWidth: "50px", maxHeight: "50px", marginRight: "5px" }}
+                                  />
+                                )
+                            )
                           ) : (
                             <span>Sin imagen</span>
                           )}
@@ -174,8 +191,11 @@ const Products = () => {
               </div>
             </div>
 
-            {/* Modal para editar producto */}
-            <Modal show={showModalEditar} onHide={() => setShowModalEditar(false)}>
+            {/* Modales */}
+            {/* Aquí van los modales de editar y eliminar */}
+
+             {/* Modal para editar producto */}
+             <Modal show={showModalEditar} onHide={() => setShowModalEditar(false)}>
               <Modal.Header closeButton>
                 <Modal.Title>Actualizar producto</Modal.Title>
               </Modal.Header>
@@ -248,6 +268,7 @@ const Products = () => {
                 </Button>
               </Modal.Footer>
             </Modal>
+            
           </div>
         </div>
       ) : (
