@@ -40,21 +40,28 @@ const Menu = () => {
         </div>
       </nav>
 
-      {/* Modal de confirmación de salida */}
-      <Modal show={showLogoutModal} onHide={() => setShowLogoutModal(false)}>
-        <Modal.Header closeButton>
-          <Modal.Title>Confirmación</Modal.Title>
-        </Modal.Header>
-        <Modal.Body>¿Está seguro de que quiere salir?</Modal.Body>
-        <Modal.Footer>
-          <Button variant="secondary" onClick={() => setShowLogoutModal(false)}>
-            Cancelar
-          </Button>
-          <Button variant="danger" onClick={handleDisconnect}>
-            Salir
-          </Button>
-        </Modal.Footer>
-      </Modal>
+{/* Modal de confirmación de salida */}
+<Modal show={showLogoutModal} onHide={() => setShowLogoutModal(false)}>
+  <Modal.Header closeButton>
+    <Modal.Title>Confirmación</Modal.Title>
+  </Modal.Header>
+  <Modal.Body>¿Está seguro de que quiere salir?</Modal.Body>
+  <Modal.Footer>
+    <Button variant="secondary" onClick={() => setShowLogoutModal(false)}>
+      Cancelar
+    </Button>
+    <Button
+      variant="danger"
+      onClick={() => {
+        setShowLogoutModal(false); // Cierra el modal
+        handleDisconnect();        // Ejecuta la lógica de desconexión
+      }}
+    >
+      Salir
+    </Button>
+  </Modal.Footer>
+</Modal>
+
 
       {/* Diálogo de conexión */}
       <ConnectDialog />

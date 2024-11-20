@@ -6,6 +6,7 @@ import Card from "react-bootstrap/Card";
 import Button from "react-bootstrap/Button";
 import "bootstrap/dist/css/bootstrap.min.css";
 import Compra from './Compra';
+import '../index.scss';
 
 const Home = () => {
   const [marketplaceBackend] = useCanister('HechoenOaxaca-icp-backend');
@@ -52,7 +53,7 @@ const Home = () => {
 
   return (
     <section className="mt-5 text-center">
-      <h1>Hecho a mano, hecho con el corazón</h1>
+      <h1 className="eslogan">Hecho a mano, Hecho con el corazón</h1>
       <div className="container mt-4">
         {loading ? (
           <p>Cargando productos...</p>
@@ -96,4 +97,3 @@ const Home = () => {
 };
 
 export default Home;
-

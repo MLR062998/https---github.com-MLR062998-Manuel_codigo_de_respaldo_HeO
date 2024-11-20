@@ -110,5 +110,16 @@ button[type="submit"] {
     vertical-align: middle;
     margin-right: 5px;
   }
+
+//estilo del eslogan
+  .eslogan {
+    font-family: 'Georgia', serif;
+    font-size: 2.5rem;
+    color: #FF6347; /* Un rojo suave */
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.4);
+    letter-spacing: 1px;
+    margin-bottom: 20px;
+  }
+  
 }
 
