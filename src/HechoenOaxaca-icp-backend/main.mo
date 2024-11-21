@@ -107,7 +107,15 @@ actor HechoenOaxacaBackend {
             case null { return #err(#ProductoNoExiste(Principal.toText(id))); };
         }
     };
+    
 
+      // Saludo simple para probar NFID
+  public shared query({caller}) func greet(name: Text): async Text {
+    return "Hola, " # name # "! Tu PrincipalId es: " # Principal.toText(caller);
+  };
+
+
+  
     // Subir imágenes a un producto
     public shared({caller = _}) func uploadImagen(
         id: Principal,

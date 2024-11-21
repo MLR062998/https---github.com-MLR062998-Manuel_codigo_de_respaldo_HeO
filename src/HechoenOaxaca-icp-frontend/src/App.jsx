@@ -1,5 +1,5 @@
 // App.js
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import Menu from './components/Menu';
 import CrearProducto from './components/CrearProducto';
@@ -11,7 +11,8 @@ import { createClient } from '@connect2ic/core';
 import { InternetIdentity } from '@connect2ic/core/providers/internet-identity';
 import PrincipaldeCompra from './components/PrincipaldeCompra';
 import ConfirmacionPago from './components/ConfirmacionPago';
-
+import Wallet from './components/Wallet.jsx';
+import { AuthClient } from "@dfinity/auth-client"; // Agregar AuthClient para autenticación
 
 const client = createClient({
   canisters: {
@@ -24,6 +25,20 @@ const client = createClient({
 });
 
 function App() {
+  const [principalId, setPrincipalId] = useState(null);
+
+  // Inicializar AuthClient y obtener principalId
+  useEffect(() => {
+    const initAuthClient = async () => {
+      const authClient = await AuthClient.create();
+      if (authClient.isAuthenticated()) {
+        const identity = authClient.getIdentity();
+        setPrincipalId(identity.getPrincipal().toText());
+      }
+    };
+    initAuthClient();
+  }, []);
+
   return (
     <Connect2ICProvider client={client}>
       <Router>
@@ -34,6 +49,7 @@ function App() {
           <Route path="/productos" element={<Products />} />
           <Route path="/compra" element={<PrincipaldeCompra />} /> {/* Ruta para PrincipaldeCompra */}
           <Route path="/ConfirmacionPago" element={<ConfirmacionPago />} />
+          <Route path="/Wallet" element={<Wallet principalId={principalId} />} />
           {/* Otras rutas necesarias */}
         </Routes>
       </Router>

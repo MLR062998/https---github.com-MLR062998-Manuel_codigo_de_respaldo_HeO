@@ -9,6 +9,11 @@
       "dependencies": [
         "HechoenOaxaca-icp-backend"
       ],
+      
+      "frontend": {
+        "entrypoint": "src/HechoenOaxaca-icp-frontend/src/index.html"
+      },
+
       "source": [
         "src/HechoenOaxaca-icp-frontend/dist"
       ],
