@@ -3,7 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import Menu from './components/Menu';
 import CrearProducto from './components/CrearProducto';
-import Products from './components/productos';
+import Products from './components/Productos';
 import Home from './components/Home';
 import { Connect2ICProvider } from '@connect2ic/react';
 import * as Productos_backend from 'declarations/HechoenOaxaca-icp-backend';
@@ -46,7 +46,7 @@ function App() {
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/nuevo-producto" element={<CrearProducto />} />
-          <Route path="/productos" element={<Products />} />
+          <Route path="/Productos" element={<Products />} />
           <Route path="/compra" element={<PrincipaldeCompra />} /> {/* Ruta para PrincipaldeCompra */}
           <Route path="/ConfirmacionPago" element={<ConfirmacionPago />} />
           <Route path="/Wallet" element={<Wallet principalId={principalId} />} />
